@@ -49,15 +49,26 @@ def getIssueById(id):
 
 def getEpicsByPI(piName):
     query = f'issuetype = Epic and fixVersion = "{ piName }"'
-    print(query)
+    print(conn.websafeQueryString(query))
     json = conn.getJqlResults(query)
-    print(json)
+
+    for epic in json['issues']:
+        print(f'Key: { epic["key"] }')
+        print(f'Summary: { epic["fields"]["summary"] }')
+        print(f'Status: { epic["fields"]["status"]["name"] }')
+
+        # I don't know if the progress data is useful or what it means.
+        print(f'Progress: { epic["fields"]["progress"]["progress"] }')
+        print(f'Total: { epic["fields"]["progress"]["total"] }')
+
+        print()
+    #print(json)
 
 (email, token) = getAuthInfo()
 conn = jira(email, token)
 
 # TODO: Have this method return a list of epics with data suitable for use in reports and
-# further queries.
+# further queries.  For now, printing some values is fine.
 
 getEpicsByPI('FPAC CDRM - PI 5')
 
