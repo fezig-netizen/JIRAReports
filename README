@@ -1,0 +1,9 @@
+To restore packages:
+* Create a virtual environment
+* Enable the virtual environment using the activate script for your OS
+* Use 'pip install -r requirements.txt' to install the packages from the list into 
+  the virual environment.
+
+To run the application:
+* Enable the virtual environment using the activate script for your OS
+* Use 'python pi_progress.py' to run from the virual environment
