@@ -49,6 +49,10 @@ class jira:
 
     def getIssueById(self, id):
         return self.restRequest(f'issue/{id}')
+    
+    def websafeQueryString(self, query):
+        safeQuery = query.replace(' ', '+')
+        return safeQuery
 
     def getJqlResults(self, query):
-        return self.restRequest('search', { 'jql': query})
+        return self.restRequest('search', { 'jql': self.websafeQueryString(query)})
