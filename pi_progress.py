@@ -1,11 +1,20 @@
+import datetime
 import json
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+from config import Config
 from Lib.jira import jira
+from models import Epic, Issue
 
-# dataPath = os.path.join(os.getcwd(), 'data', 'sqlite.db')
-# print(dataPath)
+cfg = Config()
+engine = create_engine(cfg.DATABASE_URI)
+Session = sessionmaker(bind=engine)
+session = Session()
+today = datetime.date.today()
 
+# TODO: Move location of auth file into the Config class
 # Provide an absolute path.  Otherwise, ../details.json will be used.
 def getAuthInfo(filepath=None):
     if filepath is None:
@@ -47,30 +56,66 @@ def getIssueById(id):
         print(s['fields']['issuetype']['name'])
         print(s['fields']['status']['name'])
 
-def getEpicsByPI(piName):
+# Get the issues associated with an epic and store them in the database.
+# Issues are associated with a daily instance of an epic.  The same Jira issue will have
+# multiple rows -- one for each day it has been associated with an epic.
+
+def loadIssuesByEpic(epic):
+    query = f'"Epic Link" = { epic.Key } order by rank'
+    json = conn.getJqlResults(query)
+
+    for i in json['issues']:
+        issue = session.query(Issue).filter_by(Key=i["key"], EpicId=epic.Id).first()
+
+        if issue is None:
+            issue = Issue()
+            issue.EpicId = epic.Id
+            issue.Key = i["key"]
+            issue.Date = today
+            session.add(issue)
+
+        issue.IssueType = i["fields"]["issuetype"]["name"]
+        issue.Status = i["fields"]["status"]["name"]
+        issue.Summary = i["fields"]["summary"]
+        issue.Estimate = i["fields"]["customfield_10026"]
+    
+    session.commit()
+
+# Get the epics associated with a fix version and store them in the database.
+# Epics have a date stamp.  If this is run twice in the same day, epics not seen before are added,
+# while epics already seen today are updated.  If this is run on subsequent days, there will be a
+# unique record for each epic on each day.  This allows us to have historical data, somewhat.
+
+def loadEpicsByPI(piName):
     query = f'issuetype = Epic and fixVersion = "{ piName }"'
-    print(conn.websafeQueryString(query))
     json = conn.getJqlResults(query)
 
     for epic in json['issues']:
-        print(f'Key: { epic["key"] }')
-        print(f'Summary: { epic["fields"]["summary"] }')
-        print(f'Status: { epic["fields"]["status"]["name"] }')
+        e = session.query(Epic).filter_by(Key=epic["key"], Date=today).first()
 
-        # I don't know if the progress data is useful or what it means.
-        print(f'Progress: { epic["fields"]["progress"]["progress"] }')
-        print(f'Total: { epic["fields"]["progress"]["total"] }')
+        if e is None:
+            e = Epic()
+            e.Key = epic["key"]
+            e.Date = today
+            session.add(e)
 
-        print()
-    #print(json)
+        e.Summary = epic["fields"]["summary"]
+        e.Status = epic["fields"]["status"]["name"]
+
+    session.commit()
+
+# ------------------ Main Program ------------------
 
 (email, token) = getAuthInfo()
 conn = jira(email, token)
 
-# TODO: Have this method return a list of epics with data suitable for use in reports and
-# further queries.  For now, printing some values is fine.
+loadEpicsByPI('FPAC CDRM - PI 5')
+epics = session.query(Epic).filter_by(Date=today).all()
 
-getEpicsByPI('FPAC CDRM - PI 5')
+for e in epics:
+    loadIssuesByEpic(e)
+
+
 
 # ----------- EXAMPLES -------------------------------------
 

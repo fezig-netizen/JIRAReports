@@ -4,6 +4,18 @@ To restore packages:
 * Use 'pip install -r requirements.txt' to install the packages from the list into 
   the virual environment.
 
+To Set Up The Database:
+* Update config.py file to point where you want your sqlite database file
+* Create an empty file with the name of your sqlite file (default is app_database/jira_reports.sqlite)
+* Enable the virtual environment using the activate script for your OS
+* Use 'alembic upgrade head' to generate the tables
+
 To run the application:
 * Enable the virtual environment using the activate script for your OS
 * Use 'python pi_progress.py' to run from the virual environment
+
+To generate a new copy of requirements.txt after installing new libraries:
+* Enable the virtual environment using the activate script for your OS
+* Use 'pip freeze' and redirect the output to a file.
+* Review the file and copy it over requirements.txt
+

@@ -54,5 +54,7 @@ class jira:
         safeQuery = query.replace(' ', '+')
         return safeQuery
 
-    def getJqlResults(self, query):
-        return self.restRequest('search', { 'jql': self.websafeQueryString(query)})
+    def getJqlResults(self, query, data={}):
+        data['jql'] = self.websafeQueryString(query)
+        print(data['jql'])
+        return self.restRequest('search', data)
