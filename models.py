@@ -1,6 +1,9 @@
 from sqlalchemy import MetaData, Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 
+# The naming convention has to be here to support automatic naming of keys and indexes
+# during automatic migrations.
+
 meta = MetaData(naming_convention={
         "ix": "ix_%(column_0_label)s",
         "uq": "uq_%(table_name)s_%(column_0_name)s",

@@ -77,7 +77,11 @@ def loadIssuesByEpic(epic):
         issue.IssueType = i["fields"]["issuetype"]["name"]
         issue.Status = i["fields"]["status"]["name"]
         issue.Summary = i["fields"]["summary"]
-        issue.Estimate = i["fields"]["customfield_10026"]
+
+        if issue.IssueType == 'Bug':
+            issue.Estimate = None
+        else:
+            issue.Estimate = i["fields"]["customfield_10026"]
     
     session.commit()
 
@@ -112,7 +116,7 @@ conn = jira(email, token)
 loadEpicsByPI('FPAC CDRM - PI 5')
 epics = session.query(Epic).filter_by(Date=today).all()
 
-for e in epics:
+for e in epics[22:24]:
     loadIssuesByEpic(e)
 
 
