@@ -95,18 +95,28 @@ def loadEpicsByPI(piName):
     json = conn.getJqlResults(query)
 
     for epic in json['issues']:
-        e = session.query(Epic).filter_by(Key=epic["key"], Date=today).first()
-
-        if e is None:
-            e = Epic()
-            e.Key = epic["key"]
-            e.Date = today
-            session.add(e)
-
-        e.Summary = epic["fields"]["summary"]
-        e.Status = epic["fields"]["status"]["name"]
+        loadEpic(epic)
 
     session.commit()
+
+def loadEpicById(id):
+    query = f'issuetype = Epic and key="{ id }"'
+    json = conn.getJqlResults(query)
+    loadEpic(json['issues'][0])
+    session.commit()
+
+def loadEpic(epic):
+    e = session.query(Epic).filter_by(Key=epic["key"], Date=today).first()
+
+    if e is None:
+        e = Epic()
+        e.Key = epic["key"]
+        e.Date = today
+        session.add(e)
+
+    e.Summary = epic["fields"]["summary"]
+    e.Status = epic["fields"]["status"]["name"]
+
 
 # ------------------ Main Program ------------------
 
@@ -114,9 +124,10 @@ def loadEpicsByPI(piName):
 conn = jira(email, token)
 
 loadEpicsByPI('FPAC CDRM - PI 5')
+#loadEpicById('FCDRM-2047')
 epics = session.query(Epic).filter_by(Date=today).all()
 
-for e in epics[22:24]:
+for e in epics:
     loadIssuesByEpic(e)
 
 

@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+      @media screen {
+        .body { margin-top: calc(200px + .5rem); }
+        .header { position: fixed; top: 0px;}          
+      }
+  </style>
+</head>
+<body>
+    <div class="header border-b border-gray-200 w-full">
+        <div class="px-8 py-4 bg-white">
+            <p class="pb-4 font-semibold">Legend</p>
+            <div class="grid grid-cols-3">
+                {% for col in legend|slice(3) %}
+                <div>
+                    {% for row in col %}
+                    <div class="flex py-1">
+                        <div class="bg-{{ row.color }} border border-gray-800 h-4 w-4"></div>
+                        <p class="pl-4">{{ row.label }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+        
+            </div>
+        </div>
+    </div>
+    <div class="body">&nbsp;</div>
+        <div class="px-6 text-sm">
+            {% for epic in epics %}
+            <div class="flex justify-between">
+                <div class="pb-1">{{ epic.epic.Key }} - {{ epic.epic.Summary }}</div>
+                <div class="flex">
+                    <div class="overflow-hidden flex rounded h-6">
+                        {% for s in epic.statuses %}
+                            <div class="bg-{{ s.color }} font-medium px-1 py-0.5 text-white">{{ s.total }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="px-2 py-0.5 ml-4 w-24 h-6 rounded-full font-medium bg-indigo-100 text-indigo-500 text-center">{{ epic.epic.Issues|length }} Issue{% if epic.epic.Issues|length != 1 %}s{% endif %}</div>
+                </div>
+            </div>
+            <div class="pt-1 pb-">
+                <div class="overflow-hidden h-3 mb-4 text-xs flex rounded bg-gray-100">
+                {% for s in epic.statuses %}
+                    <div style="width: {{ s.percent }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-{{ s.color }} border border-gray-800"></div>
+                {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+    
+        </div>
+    </div>
+</body>
+</html>
