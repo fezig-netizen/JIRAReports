@@ -16,18 +16,19 @@ env = Environment(
 
 Statuses = [
     'Default',
-    'Pending Clarifications', 'Backlog', 'Refined', 'To Do',
-    'InProgress', 'Code Review', 'Testing (QA)', 'Demo To SME (Internal)',
+    'Pending Clarifications', 'Backlog', 'Refined', 'Discussed/Refined', 'To Do',
+    'InProgress', 'Code Review', 'Testing (QA)', 'Demo To SME',
     'Done']
 
 colors = {
     'backlog': 'gray-700',
+    'discussed/refined': 'gray-600',
     'refined': 'gray-600',
     'to do': 'gray-400',
     'inprogress': 'blue-300',
     'testing (qa)': 'blue-700',
     'code review': 'blue-500',
-    'demo to sme (internal)': 'green-300',
+    'demo to sme': 'green-300',
     'done': 'green-600',
     'pending clarifications': 'red-300',
     'default': 'yellow-400'

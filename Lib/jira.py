@@ -40,6 +40,7 @@ class jira:
 
             url = url + '?' + '&'.join(qryString)
 
+        print(url)
         response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
@@ -49,6 +50,16 @@ class jira:
 
     def getIssueById(self, id):
         return self.restRequest(f'issue/{id}')
+
+    def getIssuesBySprint(self, sprintId, data={}):
+        query = f'sprint = { sprintId } and issuetype in (Story, Task, Bug)'
+        return self.getJqlResults(query, data)
+
+    def getSprintsByBoard(self, boardId, data={}):
+        return self.agileRequest(f'board/{ boardId }/sprint', data)
+
+    def getSprintById(self, sprintId, data={}):
+        return self.agileRequest(f'sprint/{ sprintId }', data)
     
     def websafeQueryString(self, query):
         safeQuery = query.replace(' ', '+')
@@ -56,5 +67,4 @@ class jira:
 
     def getJqlResults(self, query, data={}):
         data['jql'] = self.websafeQueryString(query)
-        print(data['jql'])
         return self.restRequest('search', data)

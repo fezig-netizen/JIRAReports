@@ -1,6 +1,4 @@
 import datetime
-import json
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -8,25 +6,18 @@ from config import Config
 from Lib.jira import jira
 from models import Epic, Issue
 
+# --------- CONSTANTS ----------
+
+# As of August 19, 2021, the main FCDRM board is numbered as "5".
+FCDRM_BOARD_NUMBER = 5
+
+# --------- Setup --------------
+
 cfg = Config()
 engine = create_engine(cfg.DATABASE_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 today = datetime.date.today()
-
-# TODO: Move location of auth file into the Config class
-# Provide an absolute path.  Otherwise, ../details.json will be used.
-def getAuthInfo(filepath=None):
-    if filepath is None:
-        parent = os.path.abspath(os.path.join(os.getcwd(), '..'))
-        filepath = os.path.join(parent, 'details.json')
-
-    with open(filepath, 'r') as input:
-        data = json.load(input)
-        email = data['email']
-        token = data['token']
-        return(email, token)
-
 
 def getIssueById(id):
     json = conn.getIssueById(id)
@@ -116,15 +107,15 @@ def loadEpic(epic):
 
     e.Summary = epic["fields"]["summary"]
     e.Status = epic["fields"]["status"]["name"]
+    #e.FixVersion = epic["fields"][]
 
 
 # ------------------ Main Program ------------------
 
-(email, token) = getAuthInfo()
+(email, token) = cfg.getAuthInfo()
 conn = jira(email, token)
 
 loadEpicsByPI('FPAC CDRM - PI 5')
-#loadEpicById('FCDRM-2047')
 epics = session.query(Epic).filter_by(Date=today).all()
 
 for e in epics:
