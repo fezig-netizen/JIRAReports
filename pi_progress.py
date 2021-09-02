@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from config import Config
 from Lib.jira import jira
-from models import Epic, Issue
+from models import Epic, Issue, FixVersion
 
 # --------- CONSTANTS ----------
 
@@ -76,6 +76,19 @@ def loadIssuesByEpic(epic):
     
     session.commit()
 
+def loadFixVersion(json):
+    version = session.query(FixVersion).filter_by(JiraId=json["id"]).first()
+
+    if version is None:
+        version = FixVersion()
+        version.JiraId = json["id"]
+        session.add(version)
+
+    version.Name = json["name"]
+    session.commit()
+
+    return version
+
 # Get the epics associated with a fix version and store them in the database.
 # Epics have a date stamp.  If this is run twice in the same day, epics not seen before are added,
 # while epics already seen today are updated.  If this is run on subsequent days, there will be a
@@ -86,7 +99,7 @@ def loadEpicsByPI(piName):
     json = conn.getJqlResults(query)
 
     for epic in json['issues']:
-        loadEpic(epic)
+        e = loadEpic(epic)
 
     session.commit()
 
@@ -103,11 +116,18 @@ def loadEpic(epic):
         e = Epic()
         e.Key = epic["key"]
         e.Date = today
+        e.SortOrder = e.Key[6:]
         session.add(e)
 
+    e.SortOrder = e.Key[6:]
     e.Summary = epic["fields"]["summary"]
     e.Status = epic["fields"]["status"]["name"]
-    #e.FixVersion = epic["fields"][]
+
+    for fv in epic["fields"]["fixVersions"]:
+        version = loadFixVersion(fv)
+        e.FixVersions.append(version)
+
+    return e
 
 
 # ------------------ Main Program ------------------

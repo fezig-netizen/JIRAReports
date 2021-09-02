@@ -32,6 +32,7 @@ class Epic(Base):
     Status = Column(String)
     Issues = relationship('Issue')
     FixVersions = relationship('FixVersion', secondary=epicFixVersions, backref='Epics')
+    SortOrder = Column(Integer)
 
 class Issue(Base):
     __tablename__ = 'issues'

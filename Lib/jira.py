@@ -60,6 +60,9 @@ class jira:
 
     def getSprintById(self, sprintId, data={}):
         return self.agileRequest(f'sprint/{ sprintId }', data)
+
+    def getFixVersionById(self, versionId, data={}):
+        return self.agileRequest(f'version/{ versionId }', data)
     
     def websafeQueryString(self, query):
         safeQuery = query.replace(' ', '+')

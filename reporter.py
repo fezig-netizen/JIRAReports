@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 
 from config import Config
-from models import Epic, Issue
+from models import Epic, FixVersion, Issue
 
 cfg = Config()
 engine = create_engine(cfg.DATABASE_URI)
@@ -36,7 +36,8 @@ colors = {
 
 today = session.query(func.max(Epic.Date)).scalar()
 epics = []
-epicList = session.query(Epic).filter_by(Date=today).all()
+epicList = session.query(Epic).filter_by(Date=today).join(Epic.FixVersions)\
+    .filter_by(Name='FPAC CDRM - PI 5').order_by(Epic.SortOrder).all()
 
 for e in epicList:
     total = 0
