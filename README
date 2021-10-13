@@ -4,11 +4,15 @@ To restore packages:
 * Use 'pip install -r requirements.txt' to install the packages from the list into 
   the virual environment.
 
-To Set Up The Database:
+To set up the database:
 * Update config.py file to point where you want your sqlite database file
 * Create an empty file with the name of your sqlite file (default is app_database/jira_reports.sqlite)
 * Enable the virtual environment using the activate script for your OS
 * Use 'alembic upgrade head' to generate the tables
+
+To generate new database migrations:
+* Use "alembic revision --autogenerate -m 'Description of change'" to generate a migration.
+* Use 'alembic upgrade head' to upgrade to the latest version of the database.
 
 To run the application:
 * Enable the virtual environment using the activate script for your OS

@@ -17,7 +17,7 @@ env = Environment(
 Statuses = [
     'Default',
     'Pending Clarifications', 'Backlog', 'Refined', 'Discussed/Refined', 'To Do',
-    'InProgress', 'Code Review', 'Testing (QA)', 'Demo To SME',
+    'InProgress', 'Code Review', 'Code Review/Documentation', 'Testing (QA)', 'Demo To SME',
     'Done']
 
 colors = {
@@ -28,6 +28,7 @@ colors = {
     'inprogress': 'blue-300',
     'testing (qa)': 'blue-700',
     'code review': 'blue-500',
+    'code review/documentation': 'blue-500',
     'demo to sme': 'green-300',
     'done': 'green-600',
     'pending clarifications': 'red-300',
@@ -37,7 +38,7 @@ colors = {
 today = session.query(func.max(Epic.Date)).scalar()
 epics = []
 epicList = session.query(Epic).filter_by(Date=today).join(Epic.FixVersions)\
-    .filter_by(Name='FPAC CDRM - PI 5').order_by(Epic.SortOrder).all()
+    .filter_by(Name='FPAC CDRM - PI 6').order_by(Epic.SortOrder).all()
 
 for e in epicList:
     total = 0

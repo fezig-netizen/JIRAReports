@@ -19,6 +19,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 today = datetime.date.today()
 
+#  This was here for debugging early on.  It can be removed.
 def getIssueById(id):
     json = conn.getIssueById(id)
     print(json['key'])
@@ -119,7 +120,6 @@ def loadEpic(epic):
         e.SortOrder = e.Key[6:]
         session.add(e)
 
-    e.SortOrder = e.Key[6:]
     e.Summary = epic["fields"]["summary"]
     e.Status = epic["fields"]["status"]["name"]
 
@@ -135,7 +135,7 @@ def loadEpic(epic):
 (email, token) = cfg.getAuthInfo()
 conn = jira(email, token)
 
-loadEpicsByPI('FPAC CDRM - PI 5')
+loadEpicsByPI('FPAC CDRM - PI 6')
 epics = session.query(Epic).filter_by(Date=today).all()
 
 for e in epics:
@@ -162,4 +162,3 @@ for e in epics:
 # print(query)
 # json = conn.getJqlResults(query)
 # print(json)
-
